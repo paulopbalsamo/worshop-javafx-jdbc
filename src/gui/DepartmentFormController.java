@@ -3,7 +3,9 @@ package gui;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import db.DbException;
 import gui.listerners.DataChangeListerner;
@@ -18,6 +20,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import model.entities.Department;
+import model.exceptions.ValidadionException;
 import model.services.DepartmentService;
 
 public class DepartmentFormController implements Initializable {
@@ -54,8 +57,14 @@ public class DepartmentFormController implements Initializable {
 			service.saveOrUpdate(entity);
 			notifyDataChangeListerner();
 			Utils.currentStage(event).close();
+			
 
-		} catch (DbException e) {
+		}
+		catch(ValidadionException e) {
+			setErrorMessage(e.getErros());
+		}
+		
+		catch (DbException e) {
 			Alerts.showAlert("ERRO AO SALVAR", null, e.getMessage(), AlertType.ERROR);
 		}
 	}
@@ -64,13 +73,25 @@ public class DepartmentFormController implements Initializable {
 		for (DataChangeListerner dataChangeListerner : dataChangeListerners) {
 			dataChangeListerner.onDataChanged();
 		}
-		
+
 	}
 
 	private Department getFormData() {
 		Department objDepartment = new Department();
+
+		ValidadionException exepException = new ValidadionException("ERRO DE VALIDAÇÃO!");
 		objDepartment.setId(Utils.tryParseInteger(txtId.getText()));
+
+		if (txtName.getText() == null || txtName.getText().trim().equals(""))
+			;
+		exepException.addErros("name", "O campo nao pode ser vazio");
 		objDepartment.setName(txtName.getText());
+		
+		if (exepException.getErros().size() > 0) {
+			throw exepException;
+		}
+		
+
 		return objDepartment;
 
 	}
@@ -107,9 +128,16 @@ public class DepartmentFormController implements Initializable {
 		txtId.setText(String.valueOf(entity.getId()));
 		txtName.setText(entity.getName());
 	}
-	
+
 	public void subscribleDataChangeListener(DataChangeListerner listener) {
 		dataChangeListerners.add(listener);
+	}
+	
+	private void setErrorMessage(Map<String, String> erros) {
+		Set<String> fielSet = erros.keySet();
+		if (fielSet.contains("name")) {
+			labelErrorName.setText(erros.get("name"));
+		}
 	}
 
 }
