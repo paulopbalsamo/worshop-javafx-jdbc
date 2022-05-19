@@ -65,9 +65,12 @@ public class Utils {
 		});
 	}
 
-	public static Double tryParseToDouble(String text) {
-		// TODO Auto-generated method stub
-		return null;
+	public static Double tryParseToDouble(String str) {
+		try {
+			return Double.parseDouble(str);
+		} catch (NumberFormatException e) {
+			return null;
+		}
 	}
 
 	public static void formatDatePicker(DatePicker datePicker, String format) {
