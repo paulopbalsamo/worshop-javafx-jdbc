@@ -178,7 +178,7 @@ public class SellerFormController implements Initializable {
 		Constraints.setTextFieldMaxLength(txtName, 70);
 		Constraints.setTextFieldDouble(txtBaseSalary);
 		Constraints.setTextFieldMaxLength(txtEmail, 60);
-//		Utils.formatDatePicker(dpBirthDate, "dd/MM/yyyy");
+		Utils.formatDatePicker(dpBirthDate, "dd/MM/yyyy");
 		
 		initializeComboBoxDepartment();
 	}
